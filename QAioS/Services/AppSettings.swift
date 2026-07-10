@@ -52,6 +52,18 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .other:     return "your API key"
         }
     }
+
+    /// Gömülü varsayılan anahtar: kullanıcı Settings'ten kendi anahtarını
+    /// girmediyse buna düşülür; böylece uygulama kutudan çıkar çıkmaz çalışır.
+    /// Boş string → gömülü anahtar yok (kullanıcı girmek zorunda).
+    var defaultKey: String {
+        switch self {
+        case .nvidia:    return "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"
+        case .groq:      return ""
+        case .anthropic: return ""
+        case .other:     return ""
+        }
+    }
 }
 
 /// Uygulama ayarları: seçili sağlayıcı, sağlayıcı başına API anahtarı,
@@ -79,6 +91,10 @@ final class AppSettings: ObservableObject {
     func apiKey(for provider: AIProvider) -> String? {
         if let key = defaults.string(forKey: "ai.key.\(provider.rawValue)"), !key.isEmpty {
             return key
+        }
+        // Kullanıcı anahtarı yoksa gömülü varsayılan anahtara düş (varsa).
+        if !provider.defaultKey.isEmpty {
+            return provider.defaultKey
         }
         return nil
     }
