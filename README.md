@@ -157,19 +157,21 @@ Both open in a window with **Copy to Clipboard** — paste into Jira.
 
 ## AI Settings (optional)
 
-Open **⚙︎ Settings › AI**, pick a provider, and paste your own API key
-(keys are entered manually):
+Open **⚙︎ Settings › AI**, pick a provider, enter the model name, and paste your
+own API key (everything is entered manually — nothing is hard-coded):
 
-| Provider | Default model | Endpoint |
+| Provider | Endpoint | Model |
 |---|---|---|
-| NVIDIA NIM | `meta/llama-3.3-70b-instruct` | fixed |
-| Groq | `llama-3.3-70b-versatile` | fixed |
-| Anthropic | `claude-opus-4-8` | fixed |
-| **Other** | `gpt-4o` | **editable** — any OpenAI-compatible endpoint (OpenAI, Azure, LM Studio, Ollama, in-house gateway) |
+| NVIDIA NIM | fixed | your choice |
+| Groq | fixed | your choice |
+| Anthropic | fixed | your choice |
+| **Other** | **editable** — any OpenAI-compatible endpoint (OpenAI, Azure, LM Studio, Ollama, in-house gateway) | your choice |
 
-> **Provider speed matters.** The same model can be seconds on one provider and
-> minutes on another (free-tier queueing). Groq is typically ~2–3 s; NVIDIA's
-> free tier can queue 1–2 min. The analyze button shows elapsed seconds.
+> **Provider speed & limits matter.** The same model can take seconds on one
+> provider and minutes on another, and free tiers differ in rate limits (some
+> reject rapid back-to-back requests). Pick the provider/model that best fits your
+> latency and quota needs; the analyze button shows elapsed seconds so you can
+> compare. Every AI feature also has a **Local / Manual** offline counterpart.
 
 Other settings tabs: **Notifications** (Slack/Teams webhook on new CRASH/FATAL)
 and **Capture** (screenshot / session recording / Instruments trace toggles).

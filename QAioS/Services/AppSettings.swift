@@ -23,7 +23,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
 
     var defaultModel: String {
         switch self {
-        case .nvidia:    return "meta/llama-3.3-70b-instruct"
+        case .nvidia:    return "openai/gpt-oss-120b"
         case .groq:      return "llama-3.3-70b-versatile"
         case .anthropic: return "claude-opus-4-8"
         case .other:     return "gpt-4o"

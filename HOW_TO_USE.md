@@ -17,9 +17,9 @@ The first time a feature needs it, macOS will ask once for **Screen Recording**
 and **Accessibility** — grant them and you won't be asked again (even after
 rebuilds).
 
-*(Optional)* To use the AI features, open **⚙︎ Settings › AI**, choose a provider
-(e.g. **Groq**, which is fast), paste your API key, and **Save**. You can skip
-this entirely and use the **Local** / **Manual** engines instead.
+*(Optional)* To use the AI features, open **⚙︎ Settings › AI**, choose a provider,
+enter a model name, paste your API key, and **Save**. You can skip this entirely
+and use the **Local** / **Manual** engines instead.
 
 ---
 
@@ -148,7 +148,8 @@ the session recording). Use **Clear List** to reset before a new run.
   `sudo xcode-select -s /Applications/Xcode.app`.
 - **Screenshots are empty/black:** grant **Screen Recording** in System Settings
   and make sure the target window (or the Simulator window) is visible.
-- **AI report is slow:** NVIDIA's free tier queues requests. Switch to **Groq**
-  in Settings for ~2–3 s responses, or use the **Manual**/**Local** engines.
+- **AI report is slow:** some provider/model combos queue on free tiers. Try a
+  faster model or provider in Settings (the analyze button shows elapsed seconds),
+  or use the **Manual** / **Local** offline engines, which are instant.
 - **Actions aren't recorded:** grant **Accessibility**; actions are only recorded
   while the target app is frontmost.
