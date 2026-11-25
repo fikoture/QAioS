@@ -331,7 +331,7 @@ struct ContentView: View {
         monitor.errorLogs.filter { $0.severity == sev }.reduce(0) { $0 + $1.occurrenceCount }
     }
 
-    /// Log ekranının üstündeki filtre onay kutuları (Error / Fatal / Exception / Crash).
+    /// Log ekranının üstündeki filtre onay kutuları (Error / Fatal / Exception / Crash / Freeze).
     private var filterBar: some View {
         HStack(spacing: 12) {
             ForEach(LogEntry.Severity.allCases, id: \.self) { sev in
@@ -360,6 +360,7 @@ struct ContentView: View {
         switch sev {
         case .exception: return .pink
         case .crash:     return .purple
+        case .freeze:    return .teal
         case .fault:     return .red
         case .error:     return .orange
         }
@@ -670,6 +671,7 @@ private struct LogRow: View {
         switch entry.severity {
         case .exception: return .pink
         case .crash: return .purple
+        case .freeze: return .teal
         case .fault: return .red
         case .error: return .orange
         }

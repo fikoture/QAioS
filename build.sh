@@ -37,6 +37,7 @@ xcrun swiftc -O \
     QAioS/QAioSApp.swift \
     QAioS/Models/LogEntry.swift \
     QAioS/Services/LogMonitor.swift \
+    QAioS/Services/HangDetector.swift \
     QAioS/Services/AnalysisService.swift \
     QAioS/Services/AppSettings.swift \
     QAioS/Services/LocalBugClassifier.swift \

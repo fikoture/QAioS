@@ -71,6 +71,7 @@ struct SessionExporter {
           .sev{font-weight:700;padding:1px 6px;border-radius:4px;font-size:11px}
           .sev.error{background:#5a3a10;color:#fb0} .sev.fatal{background:#5a1010;color:#f66}
           .sev.crash{background:#3a1050;color:#c9f}
+          .sev.freeze{background:#0d3a40;color:#6ee}
           .count{background:#333;border-radius:8px;padding:1px 7px;font-size:11px}
           .sub{color:#789;font-size:12px} .act{color:#9cf}
           pre{background:#000;padding:8px;border-radius:6px;overflow:auto;font-size:12px}

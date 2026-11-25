@@ -80,6 +80,10 @@ final class LogMonitor: ObservableObject {
     private var seenCrashFiles = Set<String>()
     private static let crashDir = NSString(string: "~/Library/Logs/DiagnosticReports").expandingTildeInPath
 
+    /// Donma (FREEZE) dedektörü: hedef macOS uygulaması cevap vermeyi bırakırsa
+    /// log'a hiçbir şey düşmese de yakalar. Yalnızca macOS kaynağında çalışır.
+    private let hangDetector = HangDetector()
+
     // Tekilleştirme: imza → errorLogs içindeki index.
     private var signatureIndex: [String: Int] = [:]
     /// Çağrı yığını örneği alınmış imzalar (tekrar örneklememek için).
@@ -201,6 +205,7 @@ final class LogMonitor: ObservableObject {
             isMonitoring = true
             statusMessage = "Monitoring \"\(name)\" (\(source.label))…"
             startCrashWatcher()                        // Console.app'in Crash Reports karşılığı
+            if source == .mac { startHangDetector(name: name) }
             // Kanıt yakalama oturumunu başlat (ekran görüntüsü/video/trace).
             let settings = AppSettings.shared
             capture.startSession(processName: name,
@@ -227,6 +232,7 @@ final class LogMonitor: ObservableObject {
         stderrPipe = nil
         crashWatcher?.cancel()
         crashWatcher = nil
+        hangDetector.stop()
         capture.stopSession()                          // video/trace'i düzgün finalize et
         if isMonitoring {
             isMonitoring = false
@@ -349,7 +355,7 @@ final class LogMonitor: ObservableObject {
         // yok. sample ~1 sn sürer; okuma thread'inde olduğu için akışı kısa süre
         // bekletir ama kritik hatalar nadirdir.
         if activeSource != .device,
-           enriched.severity == .fault || enriched.severity == .crash,
+           enriched.severity == .fault || enriched.severity == .crash || enriched.severity == .freeze,
            !sampledSignatures.contains(signature) {
             sampledSignatures.insert(signature)
             enriched.stackSample = capture.captureStackSample(processName: targetName)
@@ -390,7 +396,7 @@ final class LogMonitor: ObservableObject {
     private func notifyIfNeeded(_ entry: LogEntry, signature: String) {
         let settings = AppSettings.shared
         guard settings.notifyOnCrash, settings.webhookConfigured,
-              entry.severity == .crash || entry.severity == .fault,
+              entry.severity == .crash || entry.severity == .fault || entry.severity == .freeze,
               !baselineSignatures.contains(signature)
         else { return }
 
@@ -486,15 +492,48 @@ final class LogMonitor: ObservableObject {
             let excerpt = (try? String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8))
                 .map { $0.prefix(1500) } ?? ""
 
+            // .hang / .spin dosyaları macOS'un donma raporlarıdır → FREEZE.
+            let ext = (file as NSString).pathExtension.lowercased()
+            let isHang = ext == "hang" || ext == "spin"
+
             // emit() üzerinden geçir → tekilleştirme + ekran görüntüsü + webhook.
             emit(LogEntry(
                 timestamp: ISO8601DateFormatter().string(from: Date()),
                 processName: targetName,
                 subsystem: "DiagnosticReports",
-                severity: .crash,
-                message: "Crash report captured: \(file)\n\n\(excerpt)"
+                severity: isHang ? .freeze : .crash,
+                message: isHang
+                    ? "Hang report captured: \(file)\n\n\(excerpt)"
+                    : "Crash report captured: \(file)\n\n\(excerpt)"
             ))
         }
+    }
+
+    // MARK: - Donma (FREEZE) dedektörü
+
+    /// Hedef uygulama `threshold` saniye cevap vermezse FREEZE kaydı üretir.
+    /// Kayıt emit() üzerinden geçer: ekran görüntüsü (donmuş pencere), `sample`
+    /// ile main thread'in o an nerede takıldığını gösteren çağrı yığını ve webhook.
+    private func startHangDetector(name: String) {
+        let threshold = Int(hangDetector.threshold)
+        hangDetector.start(
+            processName: name,
+            onFreeze: { [weak self] _ in
+                guard let self else { return }
+                self.emit(LogEntry(
+                    timestamp: ISO8601DateFormatter().string(from: Date()),
+                    processName: name,
+                    subsystem: "HangDetector",
+                    severity: .freeze,
+                    message: "FREEZE: \(name) is not responding. The main thread was blocked for \(threshold) seconds or more."
+                ))
+            },
+            onRecover: { [weak self] seconds in
+                DispatchQueue.main.async {
+                    self?.statusMessage = "\(name) recovered after a freeze of about \(Int(seconds.rounded())) s."
+                }
+            }
+        )
     }
 
     // MARK: - Yardımcılar

@@ -106,6 +106,15 @@ enum LocalBugClassifier {
                 component: component, labels: ["crash", "regression-candidate"])
         }
 
+        // 1b) Donma → uygulama kullanıcıya cevap vermiyor; yayın engelleyici.
+        if entry.severity == .freeze {
+            return BugVerdict(
+                isBug: true, severity: "Blocker",
+                reason: "The app stopped responding (main thread blocked). Users see a frozen screen or a spinning cursor.",
+                category: "UI Freeze / Hang", confidence: "High", rootCause: rootCause,
+                component: component, labels: ["freeze", "hang", "performance", "main-thread"])
+        }
+
         // 2) Bilinen bug kuralları.
         for rule in bugRules {
             if let hit = rule.patterns.first(where: { msg.contains($0) }) {

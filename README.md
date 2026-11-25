@@ -4,7 +4,7 @@
 
 QAioS is a native macOS app (Swift / SwiftUI) that watches a target process's
 unified log in real time, catches errors (`ERROR` / `FATAL` / `EXCEPTION` /
-`CRASH`), captures rich evidence around each failure, and turns them into
+`CRASH`) and app freezes (`FREEZE`), captures rich evidence around each failure, and turns them into
 developer-ready bug reports and Jira tickets, with **AI** or **fully offline
 (local)** engines.
 
@@ -17,7 +17,14 @@ never opened.
 
 - **Three sources:** this Mac (`macOS`), a booted **iOS Simulator**, or a
   USB-connected **iPhone/iPad** (`idevicesyslog`).
-- **Catches ERROR / FATAL / EXCEPTION / CRASH** with checkbox filters per level.
+- **Catches ERROR / FATAL / EXCEPTION / CRASH / FREEZE** with checkbox filters per level.
+- **Freeze detection:** catches the app when it stops responding (frozen
+  screen, spinning cursor), even though a frozen app usually writes nothing to
+  the log. QAioS checks the target app every second, the same way Activity
+  Monitor decides "Not Responding". After 3 seconds without an answer it adds a
+  `FREEZE` row with a screenshot of the frozen window and a call-stack sample
+  that shows where the main thread is stuck. iOS watchdog kills (`0x8badf00d`),
+  "hang detected" log lines and macOS hang reports are also tagged `FREEZE`.
 - **Crash reports** from `~/Library/Logs/DiagnosticReports` (Console.app's "Crash
   Reports" equivalent) are folded into the stream.
 - **Deduplication:** identical errors collapse into one row with an `×N` badge.
@@ -112,7 +119,25 @@ unified log that QAioS watches. You need only Terminal and QAioS.
    **Copy to Clipboard** works.
 6. Export the **HTML report**. **Expected:** a single self-contained HTML file
    with all errors and evidence.
-7. Click **Stop**, send another `logger` line. **Expected:** no new row appears.
+7. Test freeze detection with a real app. Open **TextEdit**. In QAioS click
+   **Stop**, set **Process Name = `TextEdit`**, click **Start** and wait 2
+   seconds. Then pause TextEdit from Terminal, which freezes it on purpose:
+
+   ```bash
+   kill -STOP $(pgrep -x TextEdit)
+   ```
+
+   **Expected:** after about 3 seconds a `FREEZE` row appears ("TextEdit is not
+   responding"). Unfreeze it:
+
+   ```bash
+   kill -CONT $(pgrep -x TextEdit)
+   ```
+
+   **Expected:** the status line shows that TextEdit recovered. Freeze detection
+   needs the **Accessibility** permission (System Settings › Privacy & Security ›
+   Accessibility → allow QAioS).
+8. Click **Stop**, send another `logger` line. **Expected:** no new row appears.
 
 **AI features (optional).** Every AI button has an offline twin, so steps 1 to 7
 work without a key. To try the AI buttons, either paste your own key in
@@ -194,7 +219,7 @@ Two side-by-side buttons under **Bug Recognition**:
   smart, context-aware triage with explanations. Needs an API key.
 - **Local**: rule-based, **instant, offline, free**. Categorizes each error
   (Nil-safety, Array Bounds, Uncaught Exception, Memory Access, Concurrency,
-  Persistence, Network…), scores confidence, infers root cause (file:line +
+  Persistence, Network, UI Freeze…), scores confidence, infers root cause (file:line +
   failing stack frame) and component, and assigns labels.
 
 Bugs are marked **🐞** in the list; noise gets a faded `noise` tag. Details and
@@ -268,6 +293,7 @@ QAioS/
 ├── Models/LogEntry.swift        # LogEntry, Severity, BugVerdict, scenario, steps
 ├── Services/
 │   ├── LogMonitor.swift         # log stream/show → dedup → @Published
+│   ├── HangDetector.swift       # FREEZE detection (app not responding)
 │   ├── CaptureService.swift     # window screenshot, session video, sample, xctrace
 │   ├── UserActionRecorder.swift # target-app-scoped action capture
 │   ├── AnalysisService.swift    # AI provider routing (Anthropic + OpenAI-compatible)

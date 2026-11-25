@@ -130,7 +130,7 @@ enum JiraTicketBuilder {
         if let near = nearestStep(to: entry, steps: steps) {
             b += "\n\n**Likely trigger action:** \(near)"
         }
-        b += "\n\n**Expected:** No \(verdict.category.lowercased()) occurs during this flow.\n**Actual:** \(verdict.severity == "Blocker" ? "The app terminates." : "The error is logged and the flow is affected.")\n"
+        b += "\n\n**Expected:** No \(verdict.category.lowercased()) occurs during this flow.\n**Actual:** \(entry.severity == .freeze ? "The app stops responding (frozen screen)." : verdict.severity == "Blocker" ? "The app terminates." : "The error is logged and the flow is affected.")\n"
         return b
     }
 

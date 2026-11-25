@@ -48,6 +48,9 @@ In the left panel:
 Use the target app normally. QAioS is doing three things automatically:
 
 - **Streaming errors** into the right panel (ERROR / FATAL / EXCEPTION / CRASH).
+- **Watching for freezes** (macOS source): if the app stops responding for 3
+  seconds, a FREEZE row appears with a screenshot and a call-stack sample of
+  the stuck main thread. Needs the **Accessibility** permission.
 - **Capturing evidence** at each error: a screenshot of the target app's window,
   a system snapshot, and (for FATAL/CRASH) an Instruments call-stack sample.
 - **Recording your actions** *inside the target app* (app entry, clicks with UI
@@ -76,7 +79,7 @@ minutes"). It needs only Terminal.
 The right panel has three tabs:
 
 - **Errors**: the live, deduplicated error stream. Above the list are **filter
-  checkboxes** (Error / Fatal / Exception / Crash) with counts: tick/untick to
+  checkboxes** (Error / Fatal / Exception / Crash / Freeze) with counts: tick/untick to
   focus. Repeated errors show an `×N` badge; captured screenshots show a camera
   icon.
 - **Actions**: the auto-captured test steps.
@@ -158,5 +161,8 @@ the session recording). Use **Clear List** to reset before a new run.
 - **AI report is slow:** some provider/model combos queue on free tiers. Try a
   faster model or provider in Settings (the analyze button shows elapsed seconds),
   or use the **Manual** / **Local** offline engines, which are instant.
+- **Freezes aren't detected:** grant **Accessibility**. Freeze detection works
+  for normal Mac apps (with a Dock icon) on the **macOS** source. For the
+  Simulator and real devices QAioS relies on the hang lines in the log.
 - **Actions aren't recorded:** grant **Accessibility**; actions are only recorded
   while the target app is frontmost.

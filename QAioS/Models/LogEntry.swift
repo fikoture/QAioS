@@ -35,12 +35,26 @@ struct LogEntry: Identifiable, Equatable {
         case fault = "FATAL"
         case exception = "EXCEPTION"
         case crash = "CRASH"
+        case freeze = "FREEZE"
 
         static func from(messageType: String?, message: String) -> Severity? {
             let upper = message.uppercased()
 
+            // 0) iOS watchdog'un donan uygulamayı öldürme kodu: bu bir donmadır,
+            // çökme raporunda geçse bile FREEZE sayılır.
+            if upper.contains("8BADF00D") { return .freeze }
+
             // 1) Çökme
             if upper.contains("CRASH") { return .crash }
+
+            // 1b) Donma (uygulama cevap vermiyor): HangTracer "hang detected"
+            // satırları ve açık FREEZE yazısı.
+            if upper.contains("FREEZE")
+                || upper.contains("HANG DETECTED")
+                || upper.contains("APP HANG")
+                || upper.contains("APPLICATION HANG") {
+                return .freeze
+            }
 
             // 2) İstisna (uncaught NSException, terminating, kötü erişim, abort)
             if upper.contains("EXCEPTION")

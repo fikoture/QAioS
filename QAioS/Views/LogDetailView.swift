@@ -156,6 +156,7 @@ struct LogDetailView: View {
         switch entry.severity {
         case .exception: return .pink
         case .crash: return .purple
+        case .freeze: return .teal
         case .fault: return .red
         case .error: return .orange
         }
