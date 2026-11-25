@@ -1,6 +1,6 @@
 # QAioS: Log Monitoring and AI Bug Reporting for macOS
 
-**by SentinelAI**
+**by Fikret (Ryan) Ture**
 
 QAioS is a native macOS app (Swift / SwiftUI) that watches a target process's
 unified log in real time, catches errors (`ERROR` / `FATAL` / `EXCEPTION` /

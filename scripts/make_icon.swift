@@ -1,6 +1,6 @@
 // QAioS uygulama ikonunu üretir (1024x1024 PNG).
 // Tasarım: koyu lacivertten camgöbeğine gradyan squircle zemin üzerinde
-// beyaz kalkan + içinde canlı log/nabız çizgisi; altta "bySentinelAI" yazısı.
+// beyaz kalkan + içinde canlı log/nabız çizgisi; altta "by Fikret (Ryan) Ture" yazısı.
 // Kullanım: swift scripts/make_icon.swift <çıktı.png>
 
 import AppKit
@@ -65,10 +65,10 @@ NSColor(calibratedRed: 1.0, green: 0.32, blue: 0.30, alpha: 1).setFill()
 dot.fill()
 NSGraphicsContext.current?.restoreGraphicsState()
 
-// --- Alt yazı: bySentinelAI ---
-let caption = "bySentinelAI" as NSString
+// --- Alt yazı: by Fikret (Ryan) Ture ---
+let caption = "by Fikret (Ryan) Ture" as NSString
 let captionAttrs: [NSAttributedString.Key: Any] = [
-    .font: NSFont.systemFont(ofSize: 62, weight: .semibold),
+    .font: NSFont.systemFont(ofSize: 50, weight: .semibold),
     .foregroundColor: NSColor.white.withAlphaComponent(0.88),
     .kern: 1.5,
 ]

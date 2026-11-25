@@ -80,7 +80,7 @@ struct SessionExporter {
           code{background:#000;padding:2px 5px;border-radius:4px}
         </style></head><body>
         <header><h1>🛡️ QAioS Report — \(esc(processName))</h1>
-        <div class='meta'>Generated \(ISO8601DateFormatter().string(from: Date())) · by SentinelAI</div></header>
+        <div class='meta'>Generated \(ISO8601DateFormatter().string(from: Date())) · by Fikret (Ryan) Ture</div></header>
         <div class='summary'>\(steps.count) actions · \(logs.count) unique errors (\(errorCount) total)</div>
         \(scenarioHTML)
         <h2>Artifacts</h2>\(artifacts)

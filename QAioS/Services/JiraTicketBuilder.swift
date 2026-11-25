@@ -52,7 +52,7 @@ enum JiraTicketBuilder {
         | **Component(s)** | \(components.isEmpty ? processName : components.sorted().joined(separator: ", ")) |
         | **Labels** | \(labels.isEmpty ? "qa, auto-detected" : labels.joined(separator: ", ")) |
         | **Environment** | \(source) · process `\(processName)` |
-        | **Reporter** | QAioS (by SentinelAI) |
+        | **Reporter** | QAioS (by Fikret (Ryan) Ture) |
         | **Detected At** | \(now) |
         | **Frequency / Impact** | \(bugs.count) distinct bug(s), \(totalOccurrences) total occurrence(s) |
 

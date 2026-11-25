@@ -101,7 +101,7 @@ struct ContentView: View {
                     .shadow(color: .black.opacity(0.25), radius: 8, y: 4)
                 Text("QAioS")
                     .font(.system(size: 34, weight: .bold))
-                Text("by SentinelAI")
+                Text("by Fikret (Ryan) Ture")
                     .font(.caption.smallCaps())
                     .foregroundStyle(.secondary)
             }
