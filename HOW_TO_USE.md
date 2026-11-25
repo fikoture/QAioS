@@ -1,20 +1,23 @@
 # How to Use QAioS
 
 A step-by-step guide, from install to a finished Jira ticket.
+Requirements (macOS 14+, Apple command line tools) are listed in the README under
+"Install on your Mac".
 
 ---
 
 ## 0. One-time setup
 
 ```bash
-cd ~/Desktop/QAioS
+git clone https://github.com/fikoture/QAioS.git
+cd QAioS
 ./setup-codesign.sh    # creates a stable signing identity → permissions persist
 ./build.sh             # builds and signs QAioS.app
 open QAioS.app
 ```
 
 The first time a feature needs it, macOS will ask once for **Screen Recording**
-and **Accessibility** — grant them and you won't be asked again (even after
+and **Accessibility**: grant them and you won't be asked again (even after
 rebuilds).
 
 *(Optional)* To use the AI features, open **⚙︎ Settings › AI**, choose a provider,
@@ -27,11 +30,11 @@ and use the **Local** / **Manual** engines instead.
 
 In the left panel:
 
-1. **Source** — pick where the process runs:
-   - **macOS** — an app on this Mac (e.g. `Safari`, `Finder`).
-   - **Simulator** — an app in the booted iOS Simulator (needs full Xcode).
-   - **Device** — a USB iPhone/iPad (needs `brew install libimobiledevice`).
-2. **Process Name** — type the process, e.g. `Safari` or your test app.
+1. **Source**: pick where the process runs:
+   - **macOS**: an app on this Mac (e.g. `Safari`, `Finder`).
+   - **Simulator**: an app in the booted iOS Simulator (needs full Xcode).
+   - **Device**: a USB iPhone/iPad (needs `brew install libimobiledevice`).
+2. **Process Name**: type the process, e.g. `Safari` or your test app.
 3. Click **Start**. The dot turns green and the status shows "Monitoring…".
 
 > On Start, QAioS also backfills the **last 10 minutes** of errors, so it catches
@@ -57,10 +60,14 @@ Launch a small iOS test app (one that can raise errors on demand) in the
 Simulator. In QAioS set **Source = Simulator**, **Process Name = <app name>**,
 click **Start**, then in the app trigger:
 
-- **Log Console → Emit Error/Fault** — produces ERROR / FATAL log lines.
-- **Handled Errors** — logs an error without crashing.
-- **Force-Unwrap nil / Array Out of Range / fatalError / Uncaught NSException** —
-  crash the app on purpose. Re-open the app afterward to keep testing.
+- **A logged error or fault:** appears as ERROR or FATAL.
+- **A handled error:** logged without crashing, appears as ERROR.
+- **Force-unwrap of nil, array out of range, fatalError, uncaught NSException:**
+  crash the app on purpose (FATAL / EXCEPTION / CRASH). Re-open the app
+  afterward to keep testing.
+
+No test app at hand? Use the `logger` walkthrough in the README ("Test it in 5
+minutes"). It needs only Terminal.
 
 ---
 
@@ -68,19 +75,19 @@ click **Start**, then in the app trigger:
 
 The right panel has three tabs:
 
-- **Errors** — the live, deduplicated error stream. Above the list are **filter
-  checkboxes** (Error / Fatal / Exception / Crash) with counts — tick/untick to
+- **Errors**: the live, deduplicated error stream. Above the list are **filter
+  checkboxes** (Error / Fatal / Exception / Crash) with counts: tick/untick to
   focus. Repeated errors show an `×N` badge; captured screenshots show a camera
   icon.
-- **Actions** — the auto-captured test steps.
-- **Scenario** — load a CSV/text test scenario (one expected step per line) with
+- **Actions**: the auto-captured test steps.
+- **Scenario**: load a CSV/text test scenario (one expected step per line) with
   **Load Template…**; QAioS auto-checks which steps your actions matched.
 
 **Click a row** to open its detail window (message, context, system snapshot,
 call-stack sample, screenshot). **Right-click a row** for:
 
-- **Reproduction Steps** — a standalone repro report (AI).
-- **Analyze This Error** — analyze just that one error (AI).
+- **Reproduction Steps**: a standalone repro report (AI).
+- **Analyze This Error**: analyze just that one error (AI).
 - **Show Details** / **Copy Log Line**.
 
 ---
@@ -89,8 +96,8 @@ call-stack sample, screenshot). **Right-click a row** for:
 
 Not every error is a bug. Under **Bug Recognition**, click either:
 
-- **AI Recognize** — smart AI triage with explanations (needs API key).
-- **Local** — instant, offline, rule-based triage (no key). Categorizes each
+- **AI Recognize**: smart AI triage with explanations (needs API key).
+- **Local**: instant, offline, rule-based triage (no key). Categorizes each
   error, scores confidence, infers root cause (file:line + failing frame), and
   labels it.
 
@@ -103,19 +110,19 @@ is shown in the row's detail window.
 
 Under **Jira Ticket**, click either:
 
-- **AI Ticket** — AI writes root-cause analysis + a full Jira ticket (needs key).
-- **Manual** — an **enterprise, offline** ticket built locally: ticket fields,
+- **AI Ticket**: AI writes root-cause analysis + a full Jira ticket (needs key).
+- **Manual**: an **enterprise, offline** ticket built locally: ticket fields,
   executive summary, per-bug breakdown (category, confidence, root cause,
   evidence, likely trigger action, expected/actual), Steps to Reproduce,
   attachments, and acceptance criteria.
 
-A window opens with the ticket — click **Copy to Clipboard** and paste it into
+A window opens with the ticket: click **Copy to Clipboard** and paste it into
 Jira.
 
 Other outputs:
-- **Export HTML Report** — a single self-contained HTML file (screenshots
+- **Export HTML Report**: a single self-contained HTML file (screenshots
   embedded) revealed in Finder.
-- **Settings › Notifications** — set a Slack/Teams webhook to get pinged on new
+- **Settings › Notifications**: set a Slack/Teams webhook to get pinged on new
   CRASH/FATAL.
 
 ---
